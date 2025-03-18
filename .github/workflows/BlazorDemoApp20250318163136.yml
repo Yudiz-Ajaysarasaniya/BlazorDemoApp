@@ -44,7 +44,7 @@ jobs:
     - name: Azure Login
       uses: azure/login@v2
       with:
-        creds: ${{ secrets.BlazorDemoApp20250318163136_SPN }}
+        creds: ${{ secrets.BLAZOR_AZURE_CREDENTIALS }}
     - name: Deploy to Azure WebApp
       uses: azure/webapps-deploy@v2
       with:
