@@ -1,0 +1,73 @@
+﻿@page "/users"
+@using BlazorDemoApp.Models.Entities
+@using BlazorDemoApp.Services
+@inject UserService UserService
+@inject IToastService toastService
+@inject NavigationManager NavManager
+
+<div class="d-flex justify-content-center">
+    <div class="card w-50">
+        <div class="card-body">
+            <h4>Users List</h4>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var user in users)
+                    {
+                        <tr>
+                            <td>@user.Name</td>
+                            <td>@user.Email</td>
+                            <td>
+                                <button class="btn btn-danger btn-sm" @onclick="() => DeleteUser(user.Id)">
+                                    <i class="fa-solid fa-trash"></i>
+                                    <!-- FontAwesome delete icon -->
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            <button class="btn btn-primary" @onclick="NavigateToAddUser">Add User</button>
+        </div>
+    </div>
+</div>
+
+@code {
+    private List<UserEntity> users = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadUsers();
+    }
+
+    private async Task LoadUsers()
+    {
+        users = await UserService.GetUsers();
+    }
+
+    private async Task DeleteUser(Guid userId)
+    {
+        var response = await UserService.DeleteUser(userId);
+
+        if (response.Contains("deleted", StringComparison.OrdinalIgnoreCase))
+        {
+            toastService.ShowSuccess(response);
+            await LoadUsers(); // Refresh list after deletion
+        }
+        else
+        {
+            toastService.ShowError(response);
+        }
+    }
+
+    private void NavigateToAddUser()
+    {
+        NavManager.NavigateTo("/userspersist");
+    }
+}
