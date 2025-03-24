@@ -1,0 +1,50 @@
+﻿@page "/userspersist"
+@using BlazorDemoApp.Models.Request
+@using BlazorDemoApp.Services
+@inject UserService UserService
+@inject NavigationManager NavManager
+@inject IToastService toastService
+
+<div class="d-flex justify-content-center ">
+    <div class="card w-50">
+        <div class="card-body">
+
+            <EditForm Model="userPersistRequest">
+                <div class="mt-3">
+                    <label class="form-label">Name</label>
+                    <InputText class="form-control" @bind-Value="userPersistRequest.Name"></InputText>
+                </div>
+                <div class="mt-3">
+                    <label class="form-label">Email</label>
+                    <InputText class="form-control" @bind-Value="userPersistRequest.Email"></InputText>
+                </div>
+                <div class="mt-3">
+                    <label class="form-label">Password</label>
+                    <InputText class="form-control" @bind-Value="userPersistRequest.Password"></InputText>
+                </div>
+                <div class="mt-3 align-items-center">
+                    <button class="btn btn-primary" @onclick="AddUser">Save</button>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+</div>
+
+@code {
+    private UserPersistRequest userPersistRequest = new UserPersistRequest();
+
+    private async Task AddUser()
+    {
+        var response = await UserService.PersistUsers(userPersistRequest);
+
+        if (response.Contains("successfully", StringComparison.OrdinalIgnoreCase))
+        {
+            toastService.ShowSuccess(response);
+            NavManager.NavigateTo("/users");
+        }
+        else
+        {
+            toastService.ShowError(response);
+        }
+    }
+}
